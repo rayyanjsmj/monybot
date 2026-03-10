@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Income / Expense</title>
+<link rel="stylesheet" href="homemnbt.css">
+
+</head>
+<body>
+
+<h1>Tracker</h1>
+
+<label>
+  Income:
+  <input type="text" id="incomeInput" placeholder="Enter income">
+</label>
+
+<label>
+  Expense:
+  <input type="text" id="expenseInput" placeholder="Enter expense">
+</label>
+
+<button id="addBothBtn">Add income &amp; expense</button>
+
+<h2>Income list</h2>
+<ul id="incomeList"></ul>
+
+<h2>Expense list</h2>
+<ul id="expenseList"></ul>
+
+<div id="balance">Balance: $0.00</div>
+
+<script>
+
+let monybot = JSON.parse(localStorage.getItem("monybot")) || [];
+
+function savemony(){
+    localStorage.setItem("monybot", JSON.stringify(monybot));
+}
+
+  function addItem(inputId, listId) {
+    const value = document.getElementById(inputId).value.trim();
+    if (!value || isNaN(parseFloat(value))) return; // Only add if it's a number
+    const li = document.createElement('li');
+    li.textContent = value;
+    document.getElementById(listId).appendChild(li);
+    document.getElementById(inputId).value = '';
+    updateBalance();
+    savemony();
+  }
+
+  function updateBalance() {
+    const incomeItems = Array.from(document.querySelectorAll('#incomeList li')).map(li => parseFloat(li.textContent) || 0);
+    const expenseItems = Array.from(document.querySelectorAll('#expenseList li')).map(li => parseFloat(li.textContent) || 0);
+    const totalIncome = incomeItems.reduce((sum, val) => sum + val, 0);
+    const totalExpense = expenseItems.reduce((sum, val) => sum + val, 0);
+    const balance = totalIncome - totalExpense;
+    document.getElementById('balance').textContent = `Balance: $${balance.toFixed(2)}`;
+      document.getElementById('totalIncome').textContent = `totalIncome: $${totalIncome.toFixed(2)}`;
+      savemony();  
+}
+
+
+
+
+  document.getElementById('addBothBtn').addEventListener('click', () => {
+    addItem('incomeInput', 'incomeList');
+    addItem('expenseInput', 'expenseList');
+    savemony();
+
+  });
+
+  document.getElementById('addBothBtn').addEventListener('click', () => {
+    addItem('incomeInput', 'incomeList');
+    addItem('expenseInput', 'expenseList');
+    updateBalance();
+        savemony();
+
+    });
+    savemony();
+</script>
+
+</body>
+</html>
